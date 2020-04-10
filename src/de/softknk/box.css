@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@600&display=swap');
+
+.check-box
+{
+    -font-family: 'Dosis', sans-serif;
+    -fx-text-fill: #838383;
+    -fx-font-size: 15px;
+}
+
+.check-box:focused
+{
+    -fx-color: #ff5400;
+    -fx-focused-color: #f4e5bc;
+}
+
+.check-box .box
+{
+
+    -fx-background-color: #bfff80;
+    -fx-border-color: #aaaaaa;
+    -fx-border-width: 2px;
+    -fx-shadow-hightlight-color: #ffe657;
+    -fx-outer-boder: #38424b;
+    -fx-body-color:#9a9a9a;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 2,2,1,1;
+    -fx-padding: 0.25em;
+}
+
+.check-box:focused .box
+{
+    -fx-background-insets: -1.4,0,1,2;
+    -fx-background-radius: 3,4,2,1,1;
+
+}
+
+.check-box:hover .box
+{
+    -fx-border-color: #4f4f4f;
+}
+
+.check-box .mark
+{
+    -fx-background-insets: 1 0 -1 0 0;
+    -fx-padding: 0.3333333em;
+
+}
+
+.check-box:indeterminate .mark{
+    -fx-background-color: #2a2b2a;
+    -fx-mark-highlight-color: #395cab;
+    -fx-scale-shape: true;
+}
+
+.choose
+{
+    -font-family: 'Dosis', sans-serif;
+    -fx-font-size: 13px;
+    -fx-fill: #4f4f4f;
+}
+
+.keyInstruction
+{
+    -fx-fill: #4f4f4f;
+}
