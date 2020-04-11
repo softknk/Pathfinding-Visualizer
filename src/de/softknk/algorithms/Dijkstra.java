@@ -1,17 +1,14 @@
 package de.softknk.algorithms;
 
 import de.softknk.Cell;
+import de.softknk.GridOperation;
 import de.softknk.Main;
-import de.softknk.Pathfinding;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Dijkstra extends Pathfinding {
 
@@ -27,15 +24,12 @@ public class Dijkstra extends Pathfinding {
 
         openList = new ArrayList<>();
         closedList = new HashSet<>();
-
-        lines = new ArrayList<>();
-        circles = new ArrayList<>();
     }
 
     @Override
     public void findPath() {
         if (start != null && target != null)
-            findPath(start, target);
+            _findPath();
     }
 
     @Override
@@ -43,7 +37,7 @@ public class Dijkstra extends Pathfinding {
         return source.getG();
     }
 
-    private void findPath(Cell start, Cell target) {
+    private void _findPath() {
         openList.clear();
         closedList.clear();
 
@@ -57,7 +51,7 @@ public class Dijkstra extends Pathfinding {
                     openList.forEach(c -> c.draw(Color.rgb(255, 255, 0)));
                     closedList.forEach(c -> {
                         if (c != Main.start)
-                            c.animate(Color.rgb(138, 222, 255), Color.rgb(221, 153, 255));
+                            c.animate(Color.rgb(140, 220, 255), Color.rgb(220, 150, 255));
                     });
                 } else {
                     drawPath();
@@ -143,32 +137,20 @@ public class Dijkstra extends Pathfinding {
     }
 
     private void initCells() {
-        for (int i = 0; i < Main.SIZE; i++) {
-            for (int j = 0; j < Main.SIZE; j++) {
-                Main.cells[i][j].setDistance(Integer.MAX_VALUE / 2);
-            }
-        }
+        GridOperation.grid_operation((i, j) -> Main.grid[i][j].setDistance(Integer.MAX_VALUE / 2));
     }
 
     public List<Cell> getAdjacentCells(Cell cell) {
         Cell[] adjacentCells = new Cell[4];
 
         if (cell.getRow() - 1 >= 0)
-            adjacentCells[0] = Main.cells[cell.getRow() - 1][cell.getColumn()];
-        if (cell.getColumn() + 1 < Main.cells.length)
-            adjacentCells[1] = Main.cells[cell.getRow()][cell.getColumn() + 1];
-        if (cell.getRow() + 1 < Main.cells.length)
-            adjacentCells[2] = Main.cells[cell.getRow() + 1][cell.getColumn()];
+            adjacentCells[0] = Main.grid[cell.getRow() - 1][cell.getColumn()];
+        if (cell.getColumn() + 1 < Main.grid.length)
+            adjacentCells[1] = Main.grid[cell.getRow()][cell.getColumn() + 1];
+        if (cell.getRow() + 1 < Main.grid.length)
+            adjacentCells[2] = Main.grid[cell.getRow() + 1][cell.getColumn()];
         if (cell.getColumn() - 1 >= 0)
-            adjacentCells[3] = Main.cells[cell.getRow()][cell.getColumn() - 1];
-
-     /*  for (int i = cell.getRow() - 1; i < cell.getRow() + 2; i++) {
-            for (int j = cell.getColumn() - 1; j < cell.getColumn() + 2; j++) {
-                if (i >= 0 && i < Main.SIZE && j >= 0 && j < Main.SIZE) {
-                    adjacentCells.add(Main.cells[i][j]);
-                }
-            }
-        } */
+            adjacentCells[3] = Main.grid[cell.getRow()][cell.getColumn() - 1];
 
         List<Cell> result = new ArrayList<>();
 

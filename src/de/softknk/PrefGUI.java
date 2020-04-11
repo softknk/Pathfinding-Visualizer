@@ -1,5 +1,6 @@
 package de.softknk;
 
+import de.softknk.algorithms.Algorithms;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -15,10 +16,6 @@ import java.util.List;
 import static de.softknk.Main.*;
 
 public class PrefGUI {
-
-    public enum Algorithms {
-        DIJKSTRA, ASTAR, GREEDY
-    }
 
     public static Algorithms selected;
 

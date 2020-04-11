@@ -1,8 +1,6 @@
 package de.softknk;
 
-import de.softknk.algorithms.AStar;
-import de.softknk.algorithms.Dijkstra;
-import de.softknk.algorithms.GreedyBestFirstSearch;
+import de.softknk.algorithms.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -16,19 +14,20 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import static de.softknk.VisualizationNotPossibleException.Problem;
 
 public class Main extends Application {
 
+    public static final int GRID_SIZE = 720;
+
     public static Pane pane;
     public static int SIZE = 40;
-    public static final int GRID_SIZE = 720;
-    public static Cell[][] cells;
+    public static Cell[][] grid;
     public static Cell start, target;
     public static Pathfinding current;
 
     public static boolean selectStart, selectEnd;
-    static boolean showsCells = true;
-
+    public static boolean showsCells = true;
     public static boolean creativeMode = false;
 
     public static void main(String[] args) {
@@ -41,14 +40,14 @@ public class Main extends Application {
         pane.setStyle("-fx-background-color: #BFFF80");
         Scene scene = new Scene(pane, GRID_SIZE + 190 - 10, GRID_SIZE - 10, Cell.getDefaultColor());
         stage.setScene(scene);
-        scene.getStylesheets().add(Main.class.getResource("/de/softknk/box.css").toExternalForm());
-        scene.getStylesheets().add(Main.class.getResource("/de/softknk/button.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/de/softknk/style/box.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/de/softknk/style/button.css").toExternalForm());
 
         PrefGUI p = new PrefGUI();
 
         TextField sizeInput = new TextField();
         sizeInput.getStyleClass().add("text-field");
-        sizeInput.setPromptText("Define grid size");
+        sizeInput.setPromptText("Define grid size" + " (" + SIZE + ")");
         sizeInput.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER) {
                 if (!sizeInput.getText().equals("")) {
@@ -64,15 +63,16 @@ public class Main extends Application {
 
         Button visualize = new Button("VISUALIZE");
         visualize.setPrefSize(125, 40);
-        visualize.setOnAction(event -> startVisualization());
+        visualize.setOnAction(event -> {
+            try {
+                startVisualization();
+            } catch (VisualizationNotPossibleException e) {
+                e.printStackTrace();
+            }
+        });
         visualize.getStyleClass().add("button");
         visualize.setPrefWidth(p.getContainer().getPrefWidth());
         p.getContainer().getChildren().add(visualize);
-
-  /*      Line seperator = new Line(GRID_SIZE, 0, GRID_SIZE, GRID_SIZE);
-        seperator.setStroke(Cell.getObstacleColor());
-        seperator.setStrokeWidth(1.5);
-        pane.getChildren().add(seperator); */
 
         initGrid();
 
@@ -87,15 +87,19 @@ public class Main extends Application {
 
         pane.requestFocus();
         pane.setOnKeyPressed(key -> {
-            if (key.getCode() == KeyCode.S)
-                startVisualization();
-            if (key.getCode() == KeyCode.R)
+            if (key.getCode() == KeyCode.S) {
+                try {
+                    startVisualization();
+                } catch (VisualizationNotPossibleException e) {
+                    e.printStackTrace();
+                }
+            } else if (key.getCode() == KeyCode.R)
                 reset();
             else if (key.getCode() == KeyCode.C)
                 createRandomField();
             else if (key.getCode() == KeyCode.P) {
                 if (current != null)
-                    current.paused = !current.paused;
+                    current.setPaused(!current.getPaused());
             } else if (key.getCode() == KeyCode.F) {
                 selectEnd = false;
                 selectStart = !selectStart;
@@ -103,7 +107,7 @@ public class Main extends Application {
                 selectStart = false;
                 selectEnd = !selectEnd;
             } else if (key.getCode() == KeyCode.D)
-                showCellBorders();
+                showOrHideCellBorders();
             else if (key.getCode() == KeyCode.Z)
                 creativeMode = !creativeMode;
         });
@@ -114,31 +118,31 @@ public class Main extends Application {
         stage.show();
     }
 
-    private void startVisualization() {
+    private void startVisualization() throws VisualizationNotPossibleException {
         if (start != null && target != null) {
             if (current != null)
                 current.clean();
-            current = getSelectedAlgorithm(start, target);
+            current = getSelectedAlgorithm();
             if (current != null)
                 current.findPath();
         } else {
-            //TODO throw Start or End not defined Exception
+            throw new VisualizationNotPossibleException(Problem.START_OR_TARGET);
         }
     }
 
-    private Pathfinding getSelectedAlgorithm(Cell start, Cell target) {
+    private Pathfinding getSelectedAlgorithm() throws VisualizationNotPossibleException {
         if (PrefGUI.selected == null) {
-            System.out.println("No Algorithm selected.");
-            //TODO throw no algorithm selected exception
+            throw new VisualizationNotPossibleException(Problem.ALGORITHM_NOT_SELECTED);
         } else {
-            if (PrefGUI.selected == PrefGUI.Algorithms.ASTAR)
+            if (PrefGUI.selected == Algorithms.ASTAR)
                 return new AStar(start, target);
-            else if (PrefGUI.selected == PrefGUI.Algorithms.DIJKSTRA)
+            else if (PrefGUI.selected == Algorithms.DIJKSTRA)
                 return new Dijkstra(start, target);
-            else if (PrefGUI.selected == PrefGUI.Algorithms.GREEDY)
+            else if (PrefGUI.selected == Algorithms.GREEDY)
                 return new GreedyBestFirstSearch(start, target);
+            else
+                return null;
         }
-        return null;
     }
 
     private void reset() {
@@ -150,40 +154,34 @@ public class Main extends Application {
         start = null;
         target = null;
 
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                Main.cells[i][j].reset();
-            }
-        }
+        GridOperation.grid_operation((i, j) -> grid[i][j].reset());
     }
 
     private void createRandomField() {
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                cells[i][j].setObstacle(false);
-                if (cells[i][j] != start && cells[i][j] != target) {
-                    if (Math.random() > 0.75)
-                        cells[i][j].setObstacle(true);
-                }
+        GridOperation.grid_operation((i, j) -> {
+            grid[i][j].setObstacle(false);
+            if (grid[i][j] != start && grid[i][j] != target) {
+                if (Math.random() > 0.75)
+                    grid[i][j].setObstacle(true);
             }
-        }
+        });
     }
 
-    private void showCellBorders() {
+    private void showOrHideCellBorders() {
         showsCells = !showsCells;
 
         final int[] a = {0, 0}; //i, j
         final Timeline[] timeline = {null};
         timeline[0] = new Timeline(new KeyFrame(Duration.millis(1), event -> {
             if (showsCells)
-                cells[a[0]][a[1]].setStroke(Color.rgb(180, 180, 180));
+                grid[a[0]][a[1]].setStroke(Color.rgb(180, 180, 180));
             else
-                cells[a[0]][a[1]].setStroke(null);
+                grid[a[0]][a[1]].setStroke(null);
 
-            if (a[0] == cells.length - 1 && a[1] == cells[0].length - 1)
+            if (a[0] == grid.length - 1 && a[1] == grid[0].length - 1)
                 timeline[0].stop();
 
-            if (a[1] == cells[0].length - 1) {
+            if (a[1] == grid[0].length - 1) {
                 a[1] = 0;
                 a[0] += 1;
             } else {
@@ -195,22 +193,16 @@ public class Main extends Application {
     }
 
     private void initGrid() {
-        if (cells != null) {
-            Cell.updateSettings();
-            for (int i = 0; i < cells.length; i++) {
-                for (int j = 0; j < cells.length; j++) {
-                    pane.getChildren().remove(cells[i][j]);
-                }
-            }
+        if (grid != null) {
+            Cell.updateSizeSettings();
+            GridOperation.grid_operation(((i, j) -> pane.getChildren().remove(grid[i][j])));
         }
 
-        cells = new Cell[SIZE][SIZE];
+        grid = new Cell[SIZE][SIZE];
 
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                cells[i][j] = new Cell(i, j);
-                pane.getChildren().add(cells[i][j]);
-            }
-        }
+        GridOperation.grid_operation((i, j) -> {
+            grid[i][j] = new Cell(i, j);
+            pane.getChildren().add(grid[i][j]);
+        });
     }
 }

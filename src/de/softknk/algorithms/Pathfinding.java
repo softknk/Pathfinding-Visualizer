@@ -1,5 +1,7 @@
-package de.softknk;
+package de.softknk.algorithms;
 
+import de.softknk.Cell;
+import de.softknk.Main;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.paint.Color;
@@ -7,6 +9,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Pathfinding {
@@ -29,6 +32,8 @@ public abstract class Pathfinding {
 
     public void drawPath() {
         Color color = Color.rgb(70, 70, 70);
+        lines = new ArrayList<>();
+        circles = new ArrayList<>();
         final Cell[] tmp = {target};
 
         Timeline[] timelines = new Timeline[]{new Timeline()};
@@ -47,9 +52,11 @@ public abstract class Pathfinding {
                 Circle circle = new Circle(tmp[0].getCenterX(), tmp[0].getCenterY(), Cell.RADIUS * 0.65, color);
                 Main.pane.getChildren().add(circle);
                 circles.add(circle);
+                System.out.println(circles.size());
                 timelines[0].stop();
             }
         }));
+
 
         timelines[0].setCycleCount(Timeline.INDEFINITE);
         timelines[0].play();
@@ -65,5 +72,13 @@ public abstract class Pathfinding {
 
     public boolean isStopped() {
         return stopped;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public boolean getPaused() {
+        return paused;
     }
 }

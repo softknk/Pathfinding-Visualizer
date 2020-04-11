@@ -9,10 +9,9 @@ import javafx.util.Duration;
 
 public class Cell extends Circle {
 
-    static double rectangle_size = Main.GRID_SIZE / (double) Main.SIZE;
-    static double radius_factor = 2.3;
-    public static double RADIUS = rectangle_size / radius_factor;
-    public static double place = (rectangle_size - RADIUS * 2) / 2;
+    static double area = Main.GRID_SIZE / (double) Main.SIZE;
+    public static double RADIUS = area / 2.3;
+    public static double space = area / 2 - RADIUS;
 
     private static Color defaultColor, obstacleColor;
 
@@ -30,11 +29,9 @@ public class Cell extends Circle {
     }
 
     public Cell(int row, int column) {
-        super(column * rectangle_size + place + RADIUS,row * rectangle_size + place + RADIUS, RADIUS, Color.BLACK);
+        super(column * area + space + RADIUS,row * area + space + RADIUS, RADIUS, Color.BLACK);
         this.row = row;
         this.column = column;
-
-        setId("cell");
 
         draw(getDefaultColor());
         setStroke(obstacleColor);
@@ -86,19 +83,23 @@ public class Cell extends Circle {
         }
     }
 
-    public static void updateSettings() {
-        rectangle_size = Main.GRID_SIZE / (double) Main.SIZE;
-        RADIUS = rectangle_size / radius_factor;
+    public static void updateSizeSettings() {
+        area = Main.GRID_SIZE / (double) Main.SIZE;
+        RADIUS = area / 2.3;
     }
 
     public void reset() {
+        draw(defaultColor);
         if (obstacle)
             setObstacle(false);
         prev = null;
     }
 
     public int costs() {
-        return Main.current.costs(this);
+        if (Main.current != null)
+            return Main.current.costs(this);
+        else
+            return -1;
     }
 
     public void setObstacle(boolean obstacle) {
