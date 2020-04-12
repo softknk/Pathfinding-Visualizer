@@ -56,14 +56,14 @@ public class PrefGUI {
 
         keyInstructions = new Text[8];
 
-        keyInstructions[0] = new Text("S - start visualization");
-        keyInstructions[1] = new Text("R - reset grid");
-        keyInstructions[2] = new Text("C - create random obstacles");
-        keyInstructions[3] = new Text("P - pause/continue algorithm");
-        keyInstructions[4] = new Text("F - select the start node");
-        keyInstructions[5] = new Text("E - select the target node");
-        keyInstructions[6] = new Text("D - show/hide circle border");
-        keyInstructions[7] = new Text("Z - enter/exit creative mode");
+        keyInstructions[0] = new Text(getKeyInstructionFormat("start visualization", 'S'));
+        keyInstructions[1] = new Text(getKeyInstructionFormat("reset grid", 'R'));
+        keyInstructions[2] = new Text(getKeyInstructionFormat("create random obstacles", 'C'));
+        keyInstructions[3] = new Text(getKeyInstructionFormat("pause/continue algorithm", 'P'));
+        keyInstructions[4] = new Text(getKeyInstructionFormat("select the start node", 'F'));
+        keyInstructions[5] = new Text(getKeyInstructionFormat("select the target node", 'E'));
+        keyInstructions[6] = new Text(getKeyInstructionFormat("show/hide circle border", 'D'));
+        keyInstructions[7] = new Text(getKeyInstructionFormat("enter/exit creative mode", 'Z'));
 
 
         for (int i = 0; i < keyInstructions.length; i++) {
@@ -91,6 +91,10 @@ public class PrefGUI {
 
         algorithms.forEach(box -> box.setSelected(false));
         algorithms.get(index).setSelected(true);
+    }
+
+    private String getKeyInstructionFormat(String description, char key) {
+        return key + " " + "\u2192" + "  " + description;
     }
 
     public VBox getContainer() {
