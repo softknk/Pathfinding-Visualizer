@@ -78,9 +78,9 @@ public class Main extends Application {
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), event -> {
             if (start != null)
-                start.draw(Color.rgb(252, 186, 3));
+                start.draw(Color.rgb(252, 177, 3));
             if (target != null)
-                target.draw(Color.rgb(94, 199, 255));
+                target.draw(Color.rgb(99, 149, 255));
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -96,7 +96,7 @@ public class Main extends Application {
             } else if (key.getCode() == KeyCode.R)
                 reset();
             else if (key.getCode() == KeyCode.C)
-                createRandomField();
+                createRandomObstacles();
             else if (key.getCode() == KeyCode.P) {
                 if (current != null)
                     current.setPaused(!current.getPaused());
@@ -157,7 +157,10 @@ public class Main extends Application {
         GridOperation.grid_operation((i, j) -> grid[i][j].reset());
     }
 
-    private void createRandomField() {
+    private void createRandomObstacles() {
+        if (current != null)
+            current.clean();
+
         GridOperation.grid_operation((i, j) -> {
             grid[i][j].setObstacle(false);
             if (grid[i][j] != start && grid[i][j] != target) {

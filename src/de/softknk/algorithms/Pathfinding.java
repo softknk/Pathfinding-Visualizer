@@ -38,22 +38,23 @@ public abstract class Pathfinding {
 
         Timeline[] timelines = new Timeline[]{new Timeline()};
         timelines[0] = new Timeline(new KeyFrame(Duration.millis(50), event -> {
-            if (tmp[0].getPrev() != null) {
-                Line line = new Line(tmp[0].getCenterX(), tmp[0].getCenterY(), tmp[0].getPrev().getCenterX(), tmp[0].getPrev().getCenterY());
-                line.setStroke(color);
-                line.setStrokeWidth(2);
-                Main.pane.getChildren().add(line);
-                Circle circle = new Circle(tmp[0].getCenterX(), tmp[0].getCenterY(), Cell.RADIUS * 0.65, color);
-                lines.add(line);
-                circles.add(circle);
-                Main.pane.getChildren().add(circle);
-                tmp[0] = tmp[0].getPrev();
-            } else {
-                Circle circle = new Circle(tmp[0].getCenterX(), tmp[0].getCenterY(), Cell.RADIUS * 0.65, color);
-                Main.pane.getChildren().add(circle);
-                circles.add(circle);
-                System.out.println(circles.size());
-                timelines[0].stop();
+            if (!paused) {
+                if (tmp[0].getPrev() != null) {
+                    Line line = new Line(tmp[0].getCenterX(), tmp[0].getCenterY(), tmp[0].getPrev().getCenterX(), tmp[0].getPrev().getCenterY());
+                    line.setStroke(color);
+                    line.setStrokeWidth(2);
+                    Main.pane.getChildren().add(line);
+                    Circle circle = new Circle(tmp[0].getCenterX(), tmp[0].getCenterY(), Cell.RADIUS * 0.65, color);
+                    lines.add(line);
+                    circles.add(circle);
+                    Main.pane.getChildren().add(circle);
+                    tmp[0] = tmp[0].getPrev();
+                } else {
+                    Circle circle = new Circle(tmp[0].getCenterX(), tmp[0].getCenterY(), Cell.RADIUS * 0.65, color);
+                    Main.pane.getChildren().add(circle);
+                    circles.add(circle);
+                    timelines[0].stop();
+                }
             }
         }));
 
