@@ -9,7 +9,7 @@ import javafx.util.Duration;
 
 public class Cell extends Circle {
 
-    static double area = Main.GRID_SIZE / (double) Main.SIZE;
+    static double area = Main.GRID_SIZE / (double) Main.AMOUNT;
     public static double RADIUS = area / 2.3;
     public static double space = area / 2 - RADIUS;
 
@@ -84,7 +84,7 @@ public class Cell extends Circle {
     }
 
     public static void updateSizeSettings() {
-        area = Main.GRID_SIZE / (double) Main.SIZE;
+        area = Main.GRID_SIZE / (double) Main.AMOUNT;
         RADIUS = area / 2.3;
     }
 

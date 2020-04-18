@@ -19,9 +19,10 @@ import static de.softknk.VisualizationNotPossibleException.Problem;
 public class Main extends Application {
 
     public static final int GRID_SIZE = 720;
+    public static int AMOUNT = 40;
+    private static final double OBSTACLE_PROPABILITY = 0.25;
 
     public static Pane pane;
-    public static int SIZE = 40;
     public static Cell[][] grid;
     public static Cell start, target;
     public static Pathfinding current;
@@ -47,12 +48,12 @@ public class Main extends Application {
 
         TextField sizeInput = new TextField();
         sizeInput.getStyleClass().add("text-field");
-        sizeInput.setPromptText("Define grid size" + " (" + SIZE + ")");
+        sizeInput.setPromptText("Define grid size" + " (" + AMOUNT + ")");
         sizeInput.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER) {
                 if (!sizeInput.getText().equals("")) {
                     reset();
-                    SIZE = Integer.parseInt(sizeInput.getText());
+                    AMOUNT = Integer.parseInt(sizeInput.getText());
                     initGrid();
                     pane.requestFocus();
                 }
@@ -96,7 +97,7 @@ public class Main extends Application {
             } else if (key.getCode() == KeyCode.R)
                 reset();
             else if (key.getCode() == KeyCode.C)
-                createRandomObstacles();
+                createRandomObstacles(OBSTACLE_PROPABILITY);
             else if (key.getCode() == KeyCode.P) {
                 if (current != null)
                     current.setPaused(!current.getPaused());
@@ -157,15 +158,14 @@ public class Main extends Application {
         GridOperation.grid_operation((i, j) -> grid[i][j].reset());
     }
 
-    private void createRandomObstacles() {
+    private void createRandomObstacles(double propability) {
         if (current != null)
             current.clean();
 
         GridOperation.grid_operation((i, j) -> {
             grid[i][j].setObstacle(false);
             if (grid[i][j] != start && grid[i][j] != target) {
-                if (Math.random() > 0.75)
-                    grid[i][j].setObstacle(true);
+                grid[i][j].setObstacle(Math.random() > (1 - propability));
             }
         });
     }
@@ -201,7 +201,7 @@ public class Main extends Application {
             GridOperation.grid_operation(((i, j) -> pane.getChildren().remove(grid[i][j])));
         }
 
-        grid = new Cell[SIZE][SIZE];
+        grid = new Cell[AMOUNT][AMOUNT];
 
         GridOperation.grid_operation((i, j) -> {
             grid[i][j] = new Cell(i, j);
